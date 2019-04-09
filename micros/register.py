@@ -9,6 +9,7 @@ __status__      = "Production/Development"
 """
 This module helps to register the application
 """
+import os
 import sys
 import traceback
 from core.utils import getLogger
@@ -26,19 +27,22 @@ class MicroService:
     pass
 
   @staticmethod
-  def register():
+  def register(micros=[]):
     """Module load by given service name
     """
-    services = sys.argv[1:]
+    logger.warn("Micro services is loading...")
+    count = 0
+    services = micros
     # print("Services as : ", services, type(services))
-    logger.debug(f"Services List as : {services}")
+    logger.warn(f"Micro services  {services}")
 
     if services:
 
       for module in services:
         try:
           command_module = __import__("apps.%s.namespace" % module)
-          logger.debug(f"Imported - {module}")
+          count += 1
+          logger.warn(f"Micro service - {module}")
         except ImportError:
           # print(traceback.print_exc())
           logger.error("Exception occured at:", exc_info=True)
@@ -46,9 +50,15 @@ class MicroService:
 
     else:
 
-      logger.debug("Importing all modules of apps")
       # Importing all application by default
-      demo = __import__('apps.demo.namespace')
-      logger.debug("Imported - demo")
+      app_list = filter(lambda a: a not in ['__pycache__', '__init__.py'], os.listdir(os.getcwd() + os.sep + 'apps'))
+      # demo = __import__('apps.demo.namespace')
+      for module in app_list:
+        __import__('apps.%s.namespace' % module)
+        count += 1
+        logger.warn(f"Micro service - {module}")
+      
+    logger.warn(f'Micros loaded ({count}) - successfully')
+      
 
 

@@ -15,20 +15,29 @@ from micros.register import MicroService
 """
 Initiating the application
 """
-app.debug = DEBUG
 api.init_app(app)
 
-# Registering the micro services
-MicroService.register()
-
 # Starting the web server
-if __name__ == '__main__':  
+if __name__ == '__main__':
 
-  # Getting host detail
-  host = getAppHost()
+  args = COMMAND_ARGS
+  # SETTING LOG CONFIGURATION
+  level = iif('LOG' in args and args['LOG'], args['LOG'], LOG_LEVEL)
+  Logger._setup(path=CONF_DIR + os.sep + LOG_CONFIG_FILE_NAME, log_path=LOG_DIR, level=level)
 
-  # Starting the application server
-  app.run(**host)
+  # REGISTERING MICRO SERVICES
+  micros = iif('MICROS' in args, args['MICROS'], [])
+  MicroService.register(micros)
+
+  # APPLICATION SETUP
+  port = iif('PORT' in args and args['PORT'], args['PORT'], APPLICATION_PORT)
+  debug = iif('LOG' in args and args['LOG'] == 'DEBUG', True, False)
+
+  ######################################################
+  # STARTING FLASK APPLICATION
+  ######################################################
+  app.run(host=APPLICATION_HOST, port=port, debug=debug)
+  ######################################################
 
 
 

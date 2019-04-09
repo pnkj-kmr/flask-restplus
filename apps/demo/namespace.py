@@ -18,7 +18,8 @@ class TodoList(Resource):
     @ns.marshal_list_with(todo)
     def get(self):
         '''List all tasks'''
-        logger.debug(f"List count of TOdoList as : {len(DAO.todos)}")
+        logger.info(f"List count of TodoList as : {len(DAO.todos)}")
+        logger.debug(f"DEBUG - List count of TodoList as : {len(DAO.todos)}")
         return DAO.todos
 
     @ns.doc('create_todo')
@@ -26,7 +27,7 @@ class TodoList(Resource):
     @ns.marshal_with(todo, code=201)
     def post(self):
         '''Create a new task'''
-        logger.debug("Create a new task")
+        logger.info("Create a new task")
         return DAO.create(api.payload), 201
 
 
@@ -39,7 +40,7 @@ class Todo(Resource):
     @ns.marshal_with(todo)
     def get(self, id):
         '''Fetch a given resource'''
-        logger.debug("Fetch a given resource > id:", id)
+        logger.info("Fetch a given resource > id:", id)
         return DAO.get(id)
 
     @ns.doc('delete_todo')
@@ -54,5 +55,5 @@ class Todo(Resource):
     @ns.marshal_with(todo)
     def put(self, id):
         '''Update a task given its identifier'''
-        logger.debug(f"Update a task given its identifier > id:{id, api.payload}")
+        logger.info(f"Update a task given its identifier > id:{id, api.payload}")
         return DAO.update(id, api.payload)

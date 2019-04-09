@@ -1,0 +1,17 @@
+<VirtualHost *:80>
+  ServerAdmin pankaj@test.tst
+  ServerName 10.20.1.149
+  WSGIDaemonProcess flask-restplus python-path=<path-to-source>/flask-restplus:<path-to-source>/flask-restplus/venv/lib/python3.6/site-packages
+  WSGIScriptAlias / <path-to-source>/flask-restplus/flask.wsgi
+  #WSGIScriptReloading On
+  <Directory <path-to-source>/flask-restplus/>
+    #AllowOverride All
+    AllowOverride none
+    Require all granted
+    #Order allow,deny
+    #Allow from all
+  </Directory>
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+

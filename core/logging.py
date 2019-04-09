@@ -6,8 +6,11 @@ __email__       = "hellopankaj21@gmail.com"
 __copyright__   = "Copyright @2019"
 __status__      = "Production/Development"
 
-from .utils import *
-import logging.config
+import os
+import logging
+from .constants import LOG_FILE_NAME, LOG_ERR_FILE_NAME
+from logging.config import dictConfig
+import json
 
 
 class Logger:
@@ -17,27 +20,31 @@ class Logger:
   """
 
   @staticmethod
-  def _setup(path='logging.json', log_path='', level=logging.INFO, env_key='LOG_CFG'):
+  def _setup(path='logging.json', log_path='', level='INFO'):
     """Setup logging configuration
     """
-    # currently skipping env_key
-    # value = os.getenv(env_key, None)
-    # if value:
-    #   path = value
+    # config file check
     if os.path.exists(path):
       config = {}
       with open(path, 'rt') as f:
         config = json.load(f)
-      path_check = config.get('handlers', {}).get('info_file_handler', {}).get('filename', '')
-      if path_check:
-        config['handlers']['info_file_handler']['filename'] = log_path + os.sep + 'main.log'
-      path_check = config.get('handlers', {}).get('error_file_handler', {}).get('filename', '')
-      if path_check:
-        config['handlers']['error_file_handler']['filename'] = log_path + os.sep + 'main_error.log'
-      log_level = config.get('root', {}).get('level', '')
-      if log_level:
+      # print(json.dumps(config, indent=2))
+      # File configuration
+      check_ = config.get('handlers', {}).get('file', {})
+      if check_.get('filename', ''):
+        config['handlers']['file']['filename'] = log_path + os.sep + LOG_FILE_NAME
+      if check_.get('level', ''):
+        config['handlers']['file']['level'] = level
+      # Error file configuration
+      check_ = config.get('handlers', {}).get('error_file', {})
+      if check_.get('filename', ''):
+        config['handlers']['error_file']['filename'] = log_path + os.sep + LOG_ERR_FILE_NAME
+      # Root log level configuration
+      check_ = config.get('root', {})
+      if check_.get('level', ''):
         config['root']['level'] = level
       # print("LOGGING : ", json.dumps(config, indent=2))
-      logging.config.dictConfig(config)
+      dictConfig(config)
     else:
       logging.basicConfig(level=level)
+
